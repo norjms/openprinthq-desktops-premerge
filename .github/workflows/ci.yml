@@ -58,6 +58,14 @@ jobs:
             --build-arg FONTSOURCE_VERSION="$FONTSOURCE_VERSION" .
           APPS=${{ matrix.app }} IMAGE=openprinthq-${{ matrix.app }}:ci bash tests/run.sh
 
+  # One check for branch protection to require, whatever apps there are.
+  images:
+    needs: app
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: test "${{ needs.app.result }}" = success
+
   secrets:
     runs-on: ubuntu-latest
     steps:

@@ -19,7 +19,8 @@ OrcaSlicer has its own repository, openprinthq-orcaslicer, built the same way.
 common/restyle.py        the OpenPrintHQ restyle every app shares
 common/files/            what it adds: the web desktop's stylesheet, window and GTK themes, the browser
                          opener, and the start-up steps (s6) every desktop runs
-apps/<app>/upstream.env  the upstream image, its version tag and the digest that tag must be
+apps/<app>/upstream.env  the upstream image, its version tag, the digest that tag must be, and the
+                         architectures it is published for (PLATFORMS)
 apps/<app>/app.env       the app's settings for the shared start-up steps
 apps/<app>/convert.py    the shared restyle, then the app's own changes
 apps/<app>/Dockerfile    builds the image (from the repository's root)
@@ -62,7 +63,8 @@ executable `/etc/ahi/app-init`, which runs after these.
 2. Add `changes_<app>` to `tests/test_desktops.py` for the app's own changes.
 3. `APPS=<app> tests/run.sh`, then build and `APPS=<app> IMAGE=<image> tests/run.sh`.
 
-CI runs the same for every folder under `apps/`.
+CI runs the same for every folder under `apps/`. The OpenPrintHQ release build publishes an app as
+`ghcr.io/norjms/openprinthq-<app>` with its `desktop-<app>` target.
 
 ## Tests
 

@@ -87,6 +87,8 @@ class EachApp(unittest.TestCase):
                     self.assertIn(f"ARG {key}={env[key]}\n", docker, key)
                 self.assertRegex(env["UPSTREAM_DIGEST"], r"^sha256:[0-9a-f]{64}$")
                 self.assertNotEqual(env["UPSTREAM_VERSION"], "latest")
+                platforms = env["PLATFORMS"].split(",")
+                self.assertTrue(platforms and set(platforms) <= {"linux/amd64", "linux/arm64"}, platforms)
 
     def test_app_env_names_what_the_start_up_steps_need(self):
         for app in app_names():
