@@ -32,8 +32,8 @@ LABWC_RC = "defaults/labwc.xml"
 INIT_NGINX = "etc/s6-overlay/s6-rc.d/init-nginx/run"
 GTK_SETTINGS = "etc/gtk-3.0/settings.ini"
 S6 = "etc/s6-overlay/s6-rc.d"
-FIREFOX_INI = "usr/lib/firefox/application.ini"
-FIREFOX_POLICIES = "usr/lib/firefox/distribution/policies.json"
+# Firefox as the base image has it: Mozilla's build (Ubuntu bases) or Debian's ESR.
+FIREFOX_DIRS = ("usr/lib/firefox", "usr/lib/firefox-esr")
 OPENER = "usr/local/bin/ahi-open-url"
 XDG_OPEN = "usr/local/bin/xdg-open"
 BROWSER_DESKTOP = "usr/share/applications/ahi-browser.desktop"
@@ -42,7 +42,7 @@ APP_ENV = "etc/ahi/app.env"
 
 # Every upstream file the shared restyle reads or edits, and the folders it adds to. The file panel's path
 # depends on the base image's Python; file_panel_path() finds it.
-EDITED = (f"{DASHBOARD_SRC}/index.html", LABWC_RC, INIT_NGINX, FIREFOX_INI)
+EDITED = (f"{DASHBOARD_SRC}/index.html", LABWC_RC, INIT_NGINX)
 FOLDERS = (DASHBOARD_SRC, f"{DASHBOARD_SRC}/assets", "etc/gtk-3.0", "usr/share/themes", f"{S6}/init-config",
            f"{S6}/init-config-end/dependencies.d", f"{S6}/user/contents.d", f"{S6}/svc-de/dependencies.d",
            f"{S6}/init-selkies-config", "usr/share/applications", "etc/xdg")
@@ -110,10 +110,18 @@ def file_panel_path(root: Path) -> str:
     return str(found[0].relative_to(root))
 
 
+def firefox_dir(root: Path) -> str:
+    found = [d for d in FIREFOX_DIRS if (root / d / "application.ini").is_file()]
+    if len(found) != 1:
+        raise ConvertError(f"convert: expected one Firefox in {', '.join(FIREFOX_DIRS)}, found {len(found)}")
+    return found[0]
+
+
 def check(root: Path) -> None:
     for rel in EDITED:
         text(root, rel)
     file_panel_path(root)
+    firefox_dir(root)
     for rel in FOLDERS:
         if not (root / rel).is_dir():
             raise ConvertError(f"convert: {rel}/: missing from the upstream image")
@@ -236,12 +244,13 @@ def browser(root: Path) -> None:
     """Web addresses the app opens go to the desktop's Firefox. The hardened desktop has no xdg-open;
     ahi-open-url (http and https only) stands in for it, and Firefox runs with policies that keep it a browser
     for the web alone."""
-    if "Name=Firefox" not in text(root, FIREFOX_INI):
-        raise ConvertError(f"convert: {FIREFOX_INI}: not Firefox")
+    firefox = firefox_dir(root)
+    if "Name=Firefox" not in text(root, f"{firefox}/application.ini"):
+        raise ConvertError(f"convert: {firefox}/application.ini: not Firefox")
     src = FILES / "browser"
     for name, rel, mode in (("ahi-open-url", OPENER, 0o755), ("ahi-open-url", XDG_OPEN, 0o755),
                             ("ahi-browser.desktop", BROWSER_DESKTOP, 0o644), ("mimeapps.list", MIMEAPPS, 0o644),
-                            ("policies.json", FIREFOX_POLICIES, 0o644)):
+                            ("policies.json", f"{firefox}/distribution/policies.json", 0o644)):
         target = root / rel
         if target.exists():
             raise ConvertError(f"convert: {rel}: already in the upstream image")

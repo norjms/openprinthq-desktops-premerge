@@ -67,4 +67,11 @@ if changed:
 PY
   chown abc:abc "${APP_CONF}"
 fi
+# The same for an app whose settings are an INI file (PrusaSlicer's last_dir and last_output_path).
+if [[ "${APP_FILES_DEFAULTS:-}" == "ini" && -f "${APP_CONF}" ]]; then
+  for kv in "last_dir = ${FILES}" "last_output_path = ${FILES}/Exports"; do
+    grep -q "^${kv%% = *} = " "${APP_CONF}" || sed -i "1i ${kv}" "${APP_CONF}"
+  done
+  chown abc:abc "${APP_CONF}"
+fi
 echo "[ahi-init] Files ready at ${FILES}"

@@ -10,7 +10,7 @@ if [[ -n "${APP_CONF:-}" && -n "${APP_CONF_NEW:-}" && ! -e "${APP_CONF}" ]]; the
   mkdir -p "$(dirname "${APP_CONF}")"
   printf '%b' "${APP_CONF_NEW}" > "${APP_CONF}"
   chown -R abc:abc /config/.config
-  echo "[ahi-init] ${APP_TITLE} set to start in dark mode"
+  echo "[ahi-init] ${APP_TITLE} starts with the OpenPrintHQ settings"
 fi
 
 if [[ "${APP_SINGLE_INSTANCE:-}" == "json" && -f "${APP_CONF}" ]]; then
@@ -19,6 +19,17 @@ if [[ "${APP_SINGLE_INSTANCE:-}" == "json" && -f "${APP_CONF}" ]]; then
   elif ! grep -q '"single_instance"' "${APP_CONF}"; then
     sed -i '0,/"app": {/s//"app": {\n\t\t"single_instance": true,/' "${APP_CONF}"
   fi
+fi
+
+# The same for an app whose settings are an INI file (PrusaSlicer): the key among the file's first lines, before
+# any section, where such apps keep their own settings.
+if [[ "${APP_SINGLE_INSTANCE:-}" == "ini" && -f "${APP_CONF}" ]]; then
+  if grep -q '^single_instance = 0$' "${APP_CONF}"; then
+    sed -i 's/^single_instance = 0$/single_instance = 1/' "${APP_CONF}"
+  elif ! grep -q '^single_instance = ' "${APP_CONF}"; then
+    sed -i '1i single_instance = 1' "${APP_CONF}"
+  fi
+  chown abc:abc "${APP_CONF}"
 fi
 
 LABWC_ENV="/config/.config/labwc/environment"

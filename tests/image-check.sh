@@ -27,5 +27,6 @@ test -x /usr/local/bin/ahi-open-url
 test -x /usr/local/bin/xdg-open
 test "$BROWSER" = /usr/local/bin/ahi-open-url
 grep -q "x-scheme-handler/https=ahi-browser.desktop" /etc/xdg/mimeapps.list
-grep -q "file:///" /usr/lib/firefox/distribution/policies.json
+grep -q "file:///" /usr/lib/firefox*/distribution/policies.json
+test -x /usr/bin/firefox
 ! /usr/local/bin/ahi-open-url file:///etc/passwd 2> /dev/null

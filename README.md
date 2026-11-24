@@ -10,6 +10,7 @@ a published upstream image at a pinned digest, and only colours, fonts and the d
 | App | Craft | Built from | Folder |
 | --- | --- | --- | --- |
 | Bambu Studio | 3D printing | linuxserver.io `bambustudio` | `apps/bambustudio` |
+| PrusaSlicer | 3D printing | Debian's `prusa-slicer` on linuxserver.io `baseimage-selkies` | `apps/prusaslicer` |
 
 OrcaSlicer has its own repository, openprinthq-orcaslicer, built the same way.
 
@@ -47,8 +48,8 @@ Read by the start-up steps, as shell:
 | `APP_TITLE` | The app's name, in logs. |
 | `APP_CONF` | The app's settings file, under /config. |
 | `APP_CONF_NEW` | What a new settings file starts as (printf escapes), so the app starts dark. |
-| `APP_SINGLE_INSTANCE` | `json`: turn on the app's single-instance setting, so sent files join its window. |
-| `APP_FILES_DEFAULTS` | `json`: open from Files and export to Exports until the person picks elsewhere. |
+| `APP_SINGLE_INSTANCE` | `json` or `ini`: turn on the app's single-instance setting, so sent files join its window. |
+| `APP_FILES_DEFAULTS` | `json` or `ini`: open from Files and export to Exports until the person picks elsewhere. |
 | `APP_PROCESS` | What the app's running process is called, to tell whether it is open. |
 | `APP_RUN` | How to start it with a file. Empty: the app cannot open a file it is given. |
 
@@ -62,6 +63,10 @@ executable `/etc/ahi/app-init`, which runs after these.
    the build instead of being guessed at.
 2. Add `changes_<app>` to `tests/test_desktops.py` for the app's own changes.
 3. `APPS=<app> tests/run.sh`, then build and `APPS=<app> IMAGE=<image> tests/run.sh`.
+
+An app linuxserver.io publishes no image for is installed on their `baseimage-selkies` in a stage named
+`prepared` (base and packages, and its `root/defaults` with the autostart that starts the app), which the tests
+take their files from, then converted in the last stage (`apps/prusaslicer`).
 
 CI runs the same for every folder under `apps/`. The OpenPrintHQ release build publishes an app as
 `ghcr.io/norjms/openprinthq-<app>` with its `desktop-<app>` target.

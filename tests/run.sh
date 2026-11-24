@@ -11,7 +11,13 @@ docker="${DOCKER:-docker}"
 apps="${APPS:-$(cd "$here/apps" && for d in */; do [ -f "$d/convert.py" ] && printf '%s ' "${d%/}"; done)}"
 
 for app in $apps; do
-  DOCKER="$docker" bash "$here/tests/extract-upstream.sh" "$app"
+  if grep -q '^FROM .* AS prepared$' "$here/apps/$app/Dockerfile"; then
+    # An app installed on a base image: its files come from the base with the app installed.
+    $docker build -q --target prepared -f "$here/apps/$app/Dockerfile" -t "openprinthq-$app:prepared" "$here" > /dev/null
+    DOCKER="$docker" bash "$here/tests/extract-upstream.sh" "$app" "openprinthq-$app:prepared"
+  else
+    DOCKER="$docker" bash "$here/tests/extract-upstream.sh" "$app"
+  fi
 done
 APPS="$apps" python3 -m unittest discover -s "$here/tests" -v
 

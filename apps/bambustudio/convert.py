@@ -29,7 +29,7 @@ EDITED = (GUIDE_DARK, HOME_DARK, *FONT_FILES)
 TITLE = "Bambu Studio"
 # For the tests' extraction only; the build finds it with restyle.file_panel_path().
 FILE_PANEL = "lsiopy/lib/python3.14/site-packages/selkies/stream_server.py"
-UPSTREAM_FILES = (*r.EDITED, FILE_PANEL, *EDITED)
+UPSTREAM_FILES = (*r.EDITED, FILE_PANEL, "usr/lib/firefox/application.ini", *EDITED)
 UPSTREAM_FOLDERS = r.FOLDERS
 
 # The setup wizard's dark sheet: each Bambu Studio colour, and its OpenPrintHQ colour. Every one must be there.

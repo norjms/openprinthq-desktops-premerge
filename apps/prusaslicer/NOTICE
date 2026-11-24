@@ -1,0 +1,32 @@
+openprinthq-prusaslicer
+Copyright (C) 2026 James Norman
+
+Built by openprinthq-desktops (apps/prusaslicer): Debian's PrusaSlicer on linuxserver.io's Selkies base, restyled
+for OpenPrintHQ. The repository holds no copy of PrusaSlicer or of the base image. The image built contains the
+works below, each under its own licence, which the repository and the image keep.
+
+linuxserver.io docker-baseimage-selkies
+  https://github.com/linuxserver/docker-baseimage-selkies
+  Copyright (C) linuxserver.io. GNU General Public License, version 3 (LICENSE).
+  The image's base, its start-up scripts, its window manager settings (defaults/labwc.xml) and its web server
+  set-up (etc/s6-overlay/s6-rc.d/init-nginx/run) are linuxserver.io's; common/restyle.py changes the last two
+  as described in it. The repository's own files are offered under the same licence, GPL-3.0 (LICENSE).
+
+Selkies
+  https://github.com/selkies-project/selkies
+  The web desktop and its dashboard (usr/share/selkies), Mozilla Public License 2.0 as published with it.
+  The OpenPrintHQ dashboard is a copy of Selkies' own with one stylesheet added; Selkies' files are not changed.
+
+PrusaSlicer
+  https://github.com/prusa3d/PrusaSlicer
+  Copyright (C) Prusa Research and the PrusaSlicer authors. GNU Affero General Public License, version 3
+  (LICENSES/AGPL-3.0.txt). Installed as Debian packages it (prusa-slicer, at the version in
+  apps/prusaslicer/upstream.env); its source is Debian's source package of that version and PrusaSlicer's
+  repository above. It is not changed.
+
+Firefox ESR
+  Debian's firefox-esr package, Mozilla Public License 2.0, used as the desktop's web browser.
+
+Fonts
+  Manrope, Sora and JetBrains Mono, SIL Open Font License 1.1 (the licence files are in the image next to the
+  fonts, usr/share/selkies/artisanhub-dashboard/ahi/fonts).
