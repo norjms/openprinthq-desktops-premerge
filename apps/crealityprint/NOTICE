@@ -1,0 +1,33 @@
+openprinthq-crealityprint
+Copyright (C) 2026 James Norman
+
+Built by openprinthq-desktops (apps/crealityprint): Creality Print's Linux build on linuxserver.io's Selkies base,
+restyled for OpenPrintHQ. The repository holds no copy of Creality Print or of the base image. The image built contains the
+works below, each under its own licence, which the repository and the image keep.
+
+linuxserver.io docker-baseimage-selkies
+  https://github.com/linuxserver/docker-baseimage-selkies
+  Copyright (C) linuxserver.io. GNU General Public License, version 3 (LICENSE).
+  The image's base, its start-up scripts, its window manager settings (defaults/labwc.xml) and its web server
+  set-up (etc/s6-overlay/s6-rc.d/init-nginx/run) are linuxserver.io's; common/restyle.py changes the last two
+  as described in it. The repository's own files are offered under the same licence, GPL-3.0 (LICENSE).
+
+Selkies
+  https://github.com/selkies-project/selkies
+  The web desktop and its dashboard (usr/share/selkies), Mozilla Public License 2.0 as published with it.
+  The OpenPrintHQ dashboard is a copy of Selkies' own with one stylesheet added; Selkies' files are not changed.
+
+Creality Print
+  https://github.com/CrealityOfficial/CrealityPrint
+  Copyright (C) Creality and the Creality Print authors (a fork of OrcaSlicer, itself of Bambu Studio and
+  PrusaSlicer). GNU Affero General Public License, version 3 (LICENSES/AGPL-3.0.txt). Its Linux build from the
+  release at the version in apps/crealityprint/upstream.env, checked against the hash that release publishes;
+  its source is that release's tag in the repository above. It is not changed.
+
+Firefox
+  From the xtradeb/apps archive, as linuxserver.io's own images install it. Mozilla Public License 2.0, used as
+  the desktop's web browser.
+
+Fonts
+  Manrope, Sora and JetBrains Mono, SIL Open Font License 1.1 (the licence files are in the image next to the
+  fonts, usr/share/selkies/artisanhub-dashboard/ahi/fonts).

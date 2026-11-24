@@ -11,6 +11,7 @@ a published upstream image at a pinned digest, and only colours, fonts and the d
 | --- | --- | --- | --- |
 | Bambu Studio | 3D printing | linuxserver.io `bambustudio` | `apps/bambustudio` |
 | PrusaSlicer | 3D printing | Debian's `prusa-slicer` on linuxserver.io `baseimage-selkies` | `apps/prusaslicer` |
+| Creality Print | 3D printing | Creality's Linux build on linuxserver.io `baseimage-selkies` | `apps/crealityprint` |
 
 OrcaSlicer has its own repository, openprinthq-orcaslicer, built the same way.
 

@@ -87,7 +87,7 @@ class EachApp(unittest.TestCase):
                     self.assertIn(f"ARG {key}={env[key]}\n", docker, key)
                 self.assertRegex(env["UPSTREAM_DIGEST"], r"^sha256:[0-9a-f]{64}$")
                 self.assertNotEqual(env["UPSTREAM_VERSION"], "latest")
-                for key in ("APP_PACKAGE_VERSION", "APP_VERSION"):
+                for key in ("APP_PACKAGE_VERSION", "APP_VERSION", "APP_URL", "APP_SHA256"):
                     if key in env:
                         self.assertIn(f"ARG {key}={env[key]}\n", docker, key)
                 platforms = env["PLATFORMS"].split(",")
@@ -151,6 +151,9 @@ class EachApp(unittest.TestCase):
     def changes_prusaslicer(self, root: Path, mod) -> None:
         # Its look is the desktop's GTK theme: only the shared restyle, with Debian's Firefox ESR.
         self.assertTrue((root / "usr/lib/firefox-esr/distribution/policies.json").is_file())
+
+    def changes_crealityprint(self, root: Path, mod) -> None:
+        self.assertTrue((root / "usr/lib/firefox/distribution/policies.json").is_file())
 
     def test_each_missing_file_stops_the_conversion(self):
         for app in app_names():

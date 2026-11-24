@@ -57,7 +57,8 @@ jobs:
             --build-arg UPSTREAM_DIGEST="$UPSTREAM_DIGEST" \
             --build-arg FONTSOURCE_VERSION="$FONTSOURCE_VERSION" \
             ${APP_PACKAGE_VERSION:+--build-arg APP_PACKAGE_VERSION="$APP_PACKAGE_VERSION"} \
-            ${APP_VERSION:+--build-arg APP_VERSION="$APP_VERSION"} .
+            ${APP_VERSION:+--build-arg APP_VERSION="$APP_VERSION"} \
+            ${APP_URL:+--build-arg APP_URL="$APP_URL"} ${APP_SHA256:+--build-arg APP_SHA256="$APP_SHA256"} .
           APPS=${{ matrix.app }} IMAGE=openprinthq-${{ matrix.app }}:ci bash tests/run.sh
 
   # One check for branch protection to require, whatever apps there are.
