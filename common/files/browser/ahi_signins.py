@@ -10,9 +10,10 @@ The installer mounts one folder of sign-ins in every desktop (one per person, wi
 this merges what makes a person signed in:
 
 - Cookies, one by one (by site, name, path and container), the most recently used kept. Expired ones are dropped.
-- Saved passwords (logins.json), one by one (by their id), the most recently changed kept. Firefox encrypts them
-  with the profile's key (key4.db), so every desktop's Firefox uses the shared folder's key: a profile with no
-  passwords of its own takes it; one that already has its own key keeps it and its passwords stay its own.
+- Saved passwords (logins.json), one by one (by their id), the most recently changed kept, should a desktop's
+  Firefox save any: the desktops' policies turn the password manager off (policies.json), so today there are
+  none. Firefox encrypts them with the profile's key (key4.db), so every desktop's Firefox uses the shared
+  folder's key: a profile with no passwords of its own takes it; one with its own key keeps it and its own.
 
 Nothing else of the profile is shared (history, open tabs, settings). The shared folder is written under a lock
 and each file replaced whole, so two desktops writing at once do not mix their writes.
