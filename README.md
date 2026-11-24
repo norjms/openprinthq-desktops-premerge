@@ -10,7 +10,10 @@ a published upstream image at a pinned digest, and only colours, fonts and the d
 Windows-only apps run under Wine, and their images hold Wine but no part of the app. The desktop's first start
 downloads the vendor's own installer from the vendor (`WINE_APP_URL` in the app's `app.env`, checked against
 `WINE_APP_SHA256` when the vendor publishes a fixed address), installs it into that desktop's storage, and starts
-it (`common/wine/ahi-wine-app`). The person accepts the vendor's terms in the app's own windows.
+it (`common/wine/ahi-wine-app`). The person accepts the vendor's terms in the app's own windows. xTool Studio's
+first-run windows open blank under Wine, so its desktop asks the same questions itself, showing xTool's own terms
+from the installed app, and records only the person's answers, where xTool's windows would
+(`apps/xtoolstudio/root/usr/local/lib/ahi/xtool_consent.py`).
 
 | App | Craft | Built from | Folder |
 | --- | --- | --- | --- |
@@ -18,6 +21,7 @@ it (`common/wine/ahi-wine-app`). The person accepts the vendor's terms in the ap
 | PrusaSlicer | 3D printing | Debian's `prusa-slicer` on linuxserver.io `baseimage-selkies` | `apps/prusaslicer` |
 | Creality Print | 3D printing | Creality's Linux build on linuxserver.io `baseimage-selkies` | `apps/crealityprint` |
 | Bambu Suite | Laser crafting | Wine on linuxserver.io `baseimage-selkies`; Bambu Lab's installer at first start | `apps/bambusuite` |
+| xTool Studio | Laser crafting | Wine on linuxserver.io `baseimage-selkies`; xTool's installer at first start, and its first-run questions asked by the desktop | `apps/xtoolstudio` |
 | eufyMake Studio | Graphic art | Wine on linuxserver.io `baseimage-selkies`; eufyMake's installer at first start | `apps/eufymakestudio` |
 
 OrcaSlicer has its own repository, openprinthq-orcaslicer, built the same way.

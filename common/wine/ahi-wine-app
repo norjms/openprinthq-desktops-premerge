@@ -48,6 +48,18 @@ install_app() {
       case "${WINE_APP_INSTALL}" in
         inno) wine "${setup}" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- ;;
         nsis) wine "${setup}" /S ;;
+        # An Electron app whose NSIS installer does not finish under Wine (xTool Studio): its app is the
+        # installer's app-64.7z, unpacked where the installer would put it.
+        electron-7z)
+          rm -rf "${DATA}/unpack"
+          7z x -y "${setup}" -o"${DATA}/unpack" > /dev/null
+          archive="$(find "${DATA}/unpack" -type f -name app-64.7z | head -n 1)"
+          test -n "${archive}"
+          rm -rf "$(dirname "${EXE}")"
+          mkdir -p "$(dirname "${EXE}")"
+          7z x -y "${archive}" -o"$(dirname "${EXE}")" > /dev/null
+          rm -rf "${DATA}/unpack"
+          ;;
         *) echo "unknown installer type ${WINE_APP_INSTALL}" >&2; exit 2 ;;
       esac
       # An installer may start the app when it finishes; this script starts it itself.

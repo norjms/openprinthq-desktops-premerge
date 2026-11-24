@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# OpenPrintHQ: xTool Studio's first-run questions, before common/wine/ahi-wine-app starts it (its own windows for
+# them open blank under Wine). Exits 0 to start xTool Studio, 1 when the person has not agreed.
+exec python3 /usr/local/lib/ahi/xtool_consent.py "$1"

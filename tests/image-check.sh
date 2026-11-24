@@ -29,4 +29,4 @@ test "$BROWSER" = /usr/local/bin/ahi-open-url
 grep -q "x-scheme-handler/https=ahi-browser.desktop" /etc/xdg/mimeapps.list
 grep -q "file:///" /usr/lib/firefox*/distribution/policies.json
 test -x /usr/bin/firefox
-! /usr/local/bin/ahi-open-url file:///etc/passwd 2> /dev/null
+if /usr/local/bin/ahi-open-url file:///etc/passwd 2> /dev/null; then echo "the opener opened a file" >&2; exit 1; fi

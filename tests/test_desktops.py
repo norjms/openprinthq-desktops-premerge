@@ -162,7 +162,7 @@ class EachApp(unittest.TestCase):
         self.assertEqual(env["APP_RUN"], "/usr/local/bin/ahi-wine-app")
         self.assertEqual(env["WINE_APP_ID"], app)
         self.assertTrue(env["WINE_APP_URL"].startswith("https://"), env["WINE_APP_URL"])
-        self.assertIn(env["WINE_APP_INSTALL"], ("inno", "nsis"))
+        self.assertIn(env["WINE_APP_INSTALL"], ("inno", "nsis", "electron-7z"))
         if "WINE_APP_SHA256" in env:
             self.assertRegex(env["WINE_APP_SHA256"], r"^[0-9a-f]{64}$")
         for name in ("autostart", "autostart_wayland"):
@@ -173,6 +173,13 @@ class EachApp(unittest.TestCase):
 
     def changes_eufymakestudio(self, root: Path, mod) -> None:
         self.wine_app(root, "eufymakestudio")
+
+    def changes_xtoolstudio(self, root: Path, mod) -> None:
+        self.wine_app(root, "xtoolstudio")
+        # Its first-run questions, asked by the desktop (tests/test_xtool_consent.py).
+        own = REPO / "apps/xtoolstudio/root"
+        self.assertTrue(os.access(own / "etc/ahi/wine-before-start", os.X_OK))
+        self.assertTrue((own / "usr/local/lib/ahi/xtool_consent.py").is_file())
 
     def test_each_missing_file_stops_the_conversion(self):
         for app in app_names():

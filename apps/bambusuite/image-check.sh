@@ -10,4 +10,4 @@ grep -q "^/usr/local/bin/ahi-wine-app$" /defaults/autostart /defaults/autostart_
 test "$TITLE" = "Bambu Suite"
 ( . /etc/ahi/app.env; test "$WINE_APP_ID" = bambusuite; test -n "$WINE_APP_URL"; test "$APP_RUN" = /usr/local/bin/ahi-wine-app )
 test -x /usr/bin/firefox
-! find / -xdev -iname "BambuSuite.exe" 2> /dev/null | grep -q .
+if find / -xdev -iname "BambuSuite.exe" 2> /dev/null | grep -q .; then echo "the image holds BambuSuite.exe" >&2; exit 1; fi

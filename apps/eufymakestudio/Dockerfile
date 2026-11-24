@@ -47,7 +47,7 @@ RUN dpkg --add-architecture i386 \
       "winehq-stable=${APP_PACKAGE_VERSION}" "wine-stable=${APP_PACKAGE_VERSION}" \
       "wine-stable-amd64=${APP_PACKAGE_VERSION}" "wine-stable-i386=${APP_PACKAGE_VERSION}" \
  && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-      zenity winbind firefox-esr fonts-manrope fonts-jetbrains-mono \
+      zenity winbind p7zip-full firefox-esr fonts-manrope fonts-jetbrains-mono \
  && fc-cache -f \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
