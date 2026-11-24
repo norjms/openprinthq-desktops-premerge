@@ -7,11 +7,18 @@ the ones you pick, and gives each person their own desktop.
 This repository holds the steps that build those images. It holds no copy of any app: each image is built from
 a published upstream image at a pinned digest, and only colours, fonts and the desktop around the app change.
 
+Windows-only apps run under Wine, and their images hold Wine but no part of the app. The desktop's first start
+downloads the vendor's own installer from the vendor (`WINE_APP_URL` in the app's `app.env`, checked against
+`WINE_APP_SHA256` when the vendor publishes a fixed address), installs it into that desktop's storage, and starts
+it (`common/wine/ahi-wine-app`). The person accepts the vendor's terms in the app's own windows.
+
 | App | Craft | Built from | Folder |
 | --- | --- | --- | --- |
 | Bambu Studio | 3D printing | linuxserver.io `bambustudio` | `apps/bambustudio` |
 | PrusaSlicer | 3D printing | Debian's `prusa-slicer` on linuxserver.io `baseimage-selkies` | `apps/prusaslicer` |
 | Creality Print | 3D printing | Creality's Linux build on linuxserver.io `baseimage-selkies` | `apps/crealityprint` |
+| Bambu Suite | Laser crafting | Wine on linuxserver.io `baseimage-selkies`; Bambu Lab's installer at first start | `apps/bambusuite` |
+| eufyMake Studio | Graphic art | Wine on linuxserver.io `baseimage-selkies`; eufyMake's installer at first start | `apps/eufymakestudio` |
 
 OrcaSlicer has its own repository, openprinthq-orcaslicer, built the same way.
 
@@ -19,6 +26,7 @@ OrcaSlicer has its own repository, openprinthq-orcaslicer, built the same way.
 
 ```
 common/restyle.py        the OpenPrintHQ restyle every app shares
+common/wine/ahi-wine-app  installs and starts a Windows app under Wine (the Wine apps)
 common/files/            what it adds: the web desktop's stylesheet, window and GTK themes, the browser
                          opener, and the start-up steps (s6) every desktop runs
 apps/<app>/upstream.env  the upstream image, its version tag, the digest that tag must be, and the

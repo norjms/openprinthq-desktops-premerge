@@ -1,0 +1,39 @@
+openprinthq-bambusuite
+Copyright (C) 2026 James Norman
+
+Built by openprinthq-desktops (apps/bambusuite): Wine on linuxserver.io's Selkies base, restyled for OpenPrintHQ, to run
+Bambu Lab's Bambu Suite for Windows. The repository and the image hold no copy of Bambu Suite. The image built contains
+the works below, each under its own licence, which the repository and the image keep.
+
+linuxserver.io docker-baseimage-selkies
+  https://github.com/linuxserver/docker-baseimage-selkies
+  Copyright (C) linuxserver.io. GNU General Public License, version 3 (LICENSE).
+  The image's base, its start-up scripts, its window manager settings (defaults/labwc.xml) and its web server
+  set-up (etc/s6-overlay/s6-rc.d/init-nginx/run) are linuxserver.io's; common/restyle.py changes the last two
+  as described in it. The repository's own files are offered under the same licence, GPL-3.0 (LICENSE).
+
+Selkies
+  https://github.com/selkies-project/selkies
+  The web desktop and its dashboard (usr/share/selkies), Mozilla Public License 2.0 as published with it.
+  The OpenPrintHQ dashboard is a copy of Selkies' own with one stylesheet added; Selkies' files are not changed.
+
+
+Bambu Suite
+  https://bambulab.com/download/suite
+  Bambu Lab's software for its laser and cutting modules, under Bambu Lab's own terms. Not in the image or the
+  repository: the desktop's first start downloads Bambu Lab's Windows installer from Bambu Lab (the address and
+  hash in apps/bambusuite/app.env) and installs it into the desktop's own storage, where the person accepts Bambu
+  Lab's terms in its own windows.
+
+Wine
+  https://www.winehq.org
+  Copyright (C) the Wine project authors. GNU Lesser General Public License, version 2.1 or later, as published
+  with it (opt/wine-stable/share/doc in the image). Installed as WineHQ's Debian packages, at the version in
+  apps/bambusuite/upstream.env; its source is WineHQ's for that version. It is not changed.
+
+Firefox ESR
+  Debian's firefox-esr package, Mozilla Public License 2.0, used as the desktop's web browser.
+
+Fonts
+  Manrope, Sora and JetBrains Mono, SIL Open Font License 1.1 (the licence files are in the image next to the
+  fonts, usr/share/selkies/artisanhub-dashboard/ahi/fonts).

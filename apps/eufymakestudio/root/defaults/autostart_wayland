@@ -1,0 +1,3 @@
+# OpenPrintHQ: the desktop starts eufyMake Studio (installing it from eufyMake the first time). The theme, browser and Files
+# are set up before (init-ahi-*).
+/usr/local/bin/ahi-wine-app

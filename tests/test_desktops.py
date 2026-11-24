@@ -155,6 +155,25 @@ class EachApp(unittest.TestCase):
     def changes_crealityprint(self, root: Path, mod) -> None:
         self.assertTrue((root / "usr/lib/firefox/distribution/policies.json").is_file())
 
+    def wine_app(self, root: Path, app: str) -> None:
+        # Wine apps: the image holds Wine and the launcher only; the vendor's installer comes at first start.
+        self.assertTrue((root / "usr/lib/firefox-esr/distribution/policies.json").is_file())
+        env = env_file(REPO / "apps" / app / "app.env")
+        self.assertEqual(env["APP_RUN"], "/usr/local/bin/ahi-wine-app")
+        self.assertEqual(env["WINE_APP_ID"], app)
+        self.assertTrue(env["WINE_APP_URL"].startswith("https://"), env["WINE_APP_URL"])
+        self.assertIn(env["WINE_APP_INSTALL"], ("inno", "nsis"))
+        if "WINE_APP_SHA256" in env:
+            self.assertRegex(env["WINE_APP_SHA256"], r"^[0-9a-f]{64}$")
+        for name in ("autostart", "autostart_wayland"):
+            self.assertIn("\n/usr/local/bin/ahi-wine-app\n", (REPO / "apps" / app / "root/defaults" / name).read_text())
+
+    def changes_bambusuite(self, root: Path, mod) -> None:
+        self.wine_app(root, "bambusuite")
+
+    def changes_eufymakestudio(self, root: Path, mod) -> None:
+        self.wine_app(root, "eufymakestudio")
+
     def test_each_missing_file_stops_the_conversion(self):
         for app in app_names():
             mod = load(app)

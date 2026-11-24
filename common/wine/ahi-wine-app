@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+# OpenPrintHQ: starts a Windows app under Wine in this desktop, as the person (abc).
+#
+#   ahi-wine-app [file]
+#
+# The image holds Wine only, never the vendor's software. The first start downloads the vendor's own Windows
+# installer from the vendor (WINE_APP_URL in /etc/ahi/app.env), checks it against WINE_APP_SHA256 when the vendor
+# publishes a fixed address for it, and installs it into this desktop's storage (/config), where it stays. A new
+# WINE_APP_URL (a new image) installs that version over it on the next start. Wine draws through the desktop's
+# XWayland. A file given (sent from the farm, or opened from Files) is passed to the app as a Windows path.
+set -uo pipefail
+source /etc/ahi/app.env
+
+DATA="/config/.local/share/ahi-wine/${WINE_APP_ID}"
+export WINEPREFIX="${DATA}/prefix" WINEDEBUG="${WINEDEBUG:--all}" WINEARCH=win64
+# The vendor apps here are Electron, CEF and Qt: Wine's .NET and HTML engines are not needed, so wineboot does
+# not offer to download them.
+export WINEDLLOVERRIDES="mscoree=;mshtml="
+# Wine's X11 driver, through the desktop's XWayland: its Wayland driver cannot yet place or raise these apps'
+# windows reliably.
+unset WAYLAND_DISPLAY
+export DISPLAY="${DISPLAY:-:0}"
+EXE="${WINEPREFIX}/drive_c/${WINE_APP_EXE}"
+RECORD="${DATA}/installed-from"
+LOG="${DATA}/install.log"
+
+say_error() {
+  zenity --error --title="${APP_TITLE}" --width=420 --text="$1" 2>/dev/null || echo "$1" >&2
+}
+
+install_app() {
+  local setup="${DATA}/setup.exe" status="${DATA}/install.status"
+  mkdir -p "${DATA}"
+  rm -f "${status}"
+  {
+    (
+      set -e
+      echo "# Downloading ${APP_TITLE} from ${WINE_APP_VENDOR}"
+      curl -fL --retry 5 --retry-delay 3 --connect-timeout 20 -o "${setup}.part" "${WINE_APP_URL}"
+      if [[ -n "${WINE_APP_SHA256:-}" ]]; then
+        echo "${WINE_APP_SHA256}  ${setup}.part" | sha256sum -c - > /dev/null
+      fi
+      mv "${setup}.part" "${setup}"
+      echo "# Setting up Windows support"
+      wineboot -u
+      wineserver -w
+      echo "# Installing ${APP_TITLE}"
+      case "${WINE_APP_INSTALL}" in
+        inno) wine "${setup}" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- ;;
+        nsis) wine "${setup}" /S ;;
+        *) echo "unknown installer type ${WINE_APP_INSTALL}" >&2; exit 2 ;;
+      esac
+      # An installer may start the app when it finishes; this script starts it itself.
+      wineserver -k || true
+      test -f "${EXE}"
+      sha256sum "${setup}" | cut -d' ' -f1 > "${DATA}/installed-sha256"
+      rm -f "${setup}"
+      printf '%s\n' "${WINE_APP_URL}" > "${RECORD}"
+      echo ok > "${status}"
+    ) >> "${LOG}" 2>&1 || true
+  } &
+  local worker=$!
+  # Progress for the person while it runs (several hundred megabytes, once).
+  (
+    while kill -0 "${worker}" 2>/dev/null; do
+      grep '^# ' "${LOG}" | tail -1
+      sleep 1
+    done
+    echo 100
+  ) | zenity --progress --pulsate --auto-close --no-cancel --width=460 --title="${APP_TITLE}" \
+        --text="Getting ${APP_TITLE} ready. This happens once and takes a few minutes." 2>/dev/null || true
+  wait "${worker}"
+  if [[ ! -f "${status}" ]]; then
+    rm -f "${setup}.part" "${setup}"
+    say_error "${APP_TITLE} could not be installed. Check this desktop can reach ${WINE_APP_VENDOR}'s download site, then open ${APP_TITLE} again from the desktop menu.\n\nDetails: ${LOG}"
+    return 1
+  fi
+}
+
+mkdir -p "${DATA}"
+if [[ ! -f "${EXE}" || "$(cat "${RECORD}" 2>/dev/null)" != "${WINE_APP_URL}" ]]; then
+  install_app || exit 1
+fi
+
+# An app's own step before it starts (one whose first-run window Wine cannot show), when it has one.
+if [[ -x /etc/ahi/wine-before-start ]]; then
+  /etc/ahi/wine-before-start "${DATA}" || exit 0
+fi
+
+args=()
+if [[ $# -gt 0 && -n "$1" ]]; then
+  args+=("$(winepath -w "$1" 2>/dev/null)")
+fi
+cd "$(dirname "${EXE}")" || exit 1
+# shellcheck disable=SC2086 # WINE_APP_ARGS is a list of flags
+exec wine "${EXE}" ${WINE_APP_ARGS:-} "${args[@]}" < /dev/null
