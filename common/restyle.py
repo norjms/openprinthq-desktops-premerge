@@ -36,6 +36,11 @@ S6 = "etc/s6-overlay/s6-rc.d"
 FIREFOX_DIRS = ("usr/lib/firefox", "usr/lib/firefox-esr")
 OPENER = "usr/local/bin/ahi-open-url"
 XDG_OPEN = "usr/local/bin/xdg-open"
+# Firefox with the web sign-ins every desktop shares (OPHQ-163), and the script that merges them.
+FIREFOX = "usr/local/bin/ahi-firefox"
+SIGNINS = "usr/local/lib/ahi/ahi_signins.py"
+# The desktop's own menus, whose Firefox item becomes ahi-firefox when they have one.
+MENUS = ("defaults/menu.xml", "defaults/menu_wayland.xml")
 BROWSER_DESKTOP = "usr/share/applications/ahi-browser.desktop"
 MIMEAPPS = "etc/xdg/mimeapps.list"
 APP_ENV = "etc/ahi/app.env"
@@ -249,6 +254,7 @@ def browser(root: Path) -> None:
         raise ConvertError(f"convert: {firefox}/application.ini: not Firefox")
     src = FILES / "browser"
     for name, rel, mode in (("ahi-open-url", OPENER, 0o755), ("ahi-open-url", XDG_OPEN, 0o755),
+                            ("ahi-firefox", FIREFOX, 0o755), ("ahi_signins.py", SIGNINS, 0o755),
                             ("ahi-browser.desktop", BROWSER_DESKTOP, 0o644), ("mimeapps.list", MIMEAPPS, 0o644),
                             ("policies.json", f"{firefox}/distribution/policies.json", 0o644)):
         target = root / rel
@@ -257,6 +263,12 @@ def browser(root: Path) -> None:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src / name, target)
         os.chmod(target, mode)
+    for rel in MENUS:
+        menu = root / rel
+        if menu.is_file():
+            body = menu.read_text(encoding="utf-8")
+            menu.write_text(body.replace("<command>/usr/bin/firefox</command>", f"<command>/{FIREFOX}</command>"),
+                            encoding="utf-8")
 
 
 def apply(root: Path, title: str, app_env: str) -> None:

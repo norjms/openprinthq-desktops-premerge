@@ -15,6 +15,12 @@ first-run windows open blank under Wine, so its desktop asks the same questions 
 from the installed app, and records only the person's answers, where xTool's windows would
 (`apps/xtoolstudio/root/usr/local/lib/ahi/xtool_consent.py`).
 
+Every desktop's Firefox shares the person's web sign-ins with their other desktops (OPHQ-163): when the
+installer mounts a sign-ins folder at `/ahi-browser`, `ahi-firefox` takes the newest cookies and saved passwords
+into the desktop's own profile before Firefox starts and writes its own back while it runs and when it closes
+(`common/files/browser/ahi_signins.py`). Each desktop keeps its own profile, since Firefox cannot open one from
+two places at once.
+
 | App | Craft | Built from | Folder |
 | --- | --- | --- | --- |
 | Bambu Studio | 3D printing | linuxserver.io `bambustudio` | `apps/bambustudio` |

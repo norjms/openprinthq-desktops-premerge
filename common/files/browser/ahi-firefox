@@ -1,0 +1,28 @@
+#!/bin/sh
+# OpenPrintHQ: the desktop's Firefox, sharing web sign-ins with every other desktop (OPHQ-163). When the
+# installer mounts the shared sign-ins folder (/ahi-browser), the newest sign-ins are taken into this desktop's
+# profile before Firefox starts, and its own are written back every two minutes and when it closes
+# (ahi_signins.py). Without the folder it is just Firefox. A Firefox already running takes the address itself.
+SHARED=/ahi-browser
+SIGNINS="python3 /usr/local/lib/ahi/ahi_signins.py"
+FIREFOX=/usr/bin/firefox
+profile="$($SIGNINS profile)"
+running() {
+  [ -L "${profile}/lock" ] || return 1
+  pid="$(readlink "${profile}/lock" | sed 's/.*+//')"
+  [ -n "${pid}" ] && kill -0 "${pid}" 2>/dev/null
+}
+if running || [ ! -d "${SHARED}" ] || [ ! -w "${SHARED}" ]; then
+  exec "${FIREFOX}" --profile "${profile}" "$@"
+fi
+$SIGNINS import "${profile}" "${SHARED}"
+"${FIREFOX}" --profile "${profile}" "$@" &
+browser=$!
+( while kill -0 "${browser}" 2>/dev/null; do
+    sleep 120
+    kill -0 "${browser}" 2>/dev/null && $SIGNINS export "${profile}" "${SHARED}"
+  done ) &
+keeper=$!
+wait "${browser}"
+kill "${keeper}" 2>/dev/null
+$SIGNINS export "${profile}" "${SHARED}"

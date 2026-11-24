@@ -13,3 +13,11 @@ printf 'BROWSER=%s\n' "${OPENER}" >> "${LABWC_ENV}.ahi"
 mv "${LABWC_ENV}.ahi" "${LABWC_ENV}"
 chown abc:abc /config/.config "$(dirname "${LABWC_ENV}")" "${LABWC_ENV}"
 echo "[ahi-init] web addresses open in Firefox"
+
+# The web sign-ins every desktop shares (OPHQ-163), when the installer mounts their folder: the person's to
+# write, and theirs alone. Only the folder: what is in it is the person's.
+if [[ -d /ahi-browser && ! -L /ahi-browser ]]; then
+  chown abc:abc /ahi-browser
+  chmod 700 /ahi-browser
+  echo "[ahi-init] Firefox shares sign-ins with the other desktops"
+fi

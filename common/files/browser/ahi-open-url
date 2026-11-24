@@ -12,4 +12,4 @@ case "${url}" in
     ;;
 esac
 # A running Firefox takes the address in a new tab and this returns at once.
-exec /usr/bin/firefox --new-tab "${url}"
+exec /usr/local/bin/ahi-firefox --new-tab "${url}"

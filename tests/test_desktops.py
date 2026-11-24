@@ -134,7 +134,7 @@ class EachApp(unittest.TestCase):
             self.assertTrue(os.access(s6 / name / "run", os.X_OK), name)
             self.assertTrue((s6 / "user/contents.d" / name).exists(), name)
         self.assertEqual((root / restyle.APP_ENV).read_text(), (REPO / "apps" / app / "app.env").read_text())
-        for rel in (restyle.OPENER, restyle.XDG_OPEN):
+        for rel in (restyle.OPENER, restyle.XDG_OPEN, restyle.FIREFOX, restyle.SIGNINS):
             self.assertTrue(os.access(root / rel, os.X_OK), rel)
 
     def changes_bambustudio(self, root: Path, mod) -> None:
@@ -273,7 +273,8 @@ class OpenerOpensTheWebOnly(unittest.TestCase):
     def run_opener(self, url):
         fake = Path(tempfile.mkdtemp(prefix="ahi-opener-"))
         opener = fake / "ahi-open-url"
-        body = (REPO / "common/files/browser/ahi-open-url").read_text().replace("/usr/bin/firefox", str(fake / "firefox"))
+        body = (REPO / "common/files/browser/ahi-open-url").read_text().replace(
+            "/usr/local/bin/ahi-firefox", str(fake / "firefox"))
         opener.write_text(body)
         (fake / "firefox").write_text('#!/bin/sh\necho "$@" > "$(dirname "$0")/opened"\n')
         os.chmod(opener, 0o755)

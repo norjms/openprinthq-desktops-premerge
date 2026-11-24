@@ -30,3 +30,10 @@ grep -q "x-scheme-handler/https=ahi-browser.desktop" /etc/xdg/mimeapps.list
 grep -q "file:///" /usr/lib/firefox*/distribution/policies.json
 test -x /usr/bin/firefox
 if /usr/local/bin/ahi-open-url file:///etc/passwd 2> /dev/null; then echo "the opener opened a file" >&2; exit 1; fi
+# Firefox shares sign-ins across desktops (OPHQ-163): the opener and the desktop's menu use the wrapper.
+test -x /usr/local/bin/ahi-firefox
+python3 -c "import ast, sys; ast.parse(open(sys.argv[1]).read())" /usr/local/lib/ahi/ahi_signins.py
+grep -q "^exec /usr/local/bin/ahi-firefox " /usr/local/bin/ahi-open-url
+if grep -qs "<command>/usr/bin/firefox</command>" /defaults/menu.xml /defaults/menu_wayland.xml; then
+  echo "a menu still starts Firefox without the shared sign-ins" >&2; exit 1
+fi
