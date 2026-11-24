@@ -5,7 +5,7 @@
 
 Run in the Dockerfile's last stage, after Debian's PrusaSlicer and Firefox ESR are installed on linuxserver.io's
 Selkies base. Only the shared restyle (common/restyle.py): PrusaSlicer draws itself with GTK, so the desktop's
-ArtisanHub GTK theme and Manrope are its look, and it has no web pages of its own to change. PrusaSlicer itself is
+OpenPrintHQ GTK theme and Manrope are its look, and it has no web pages of its own to change. PrusaSlicer itself is
 not changed or rebuilt.
 """
 
